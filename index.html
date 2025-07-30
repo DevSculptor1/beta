@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OG Toolkit - Ultimate Video Extractor</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f9fafb;
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+        }
+        
+        .video-card {
+            transition: all 0.2s ease;
+            border-radius: 10px;
+        }
+        
+        .video-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+        }
+        
+        .animate-pulse {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .animate-fade-in {
+            animation: fadeIn 0.3s ease-out;
+        }
+        
+        .animate-fade-out {
+            animation: fadeOut 0.3s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes fadeOut {
+            from { opacity: 1; transform: translateY(0); }
+            to { opacity: 0; transform: translateY(10px); }
+        }
+        
+        .prose :where(p):not(:where([class~="not-prose"] *)) {
+            margin-top: 0.5em;
+            margin-bottom: 0.5em;
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+    <!-- Header -->
+    <header class="gradient-bg text-white shadow-sm">
+        <div class="container mx-auto px-4 py-5">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center space-x-3">
+                    <i class="fas fa-play-circle text-2xl"></i>
+                    <h1 class="text-xl font-semibold">OG Toolkit</h1>
+                </div>
+                <div class="text-xs bg-white/20 px-2.5 py-1 rounded-full">
+                    Video Extractor
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8 max-w-4xl">
+        <!-- Input Section -->
+        <div class="bg-white rounded-xl shadow-sm p-6 mb-8 border border-gray-100">
+            <h2 class="text-lg font-semibold text-gray-800 mb-4">Extract Videos from Any Website</h2>
+            
+            <div class="flex flex-col space-y-3">
+                <div>
+                    <div class="flex space-x-2">
+                        <input 
+                            type="url" 
+                            id="url-input" 
+                            placeholder="https://example.com" 
+                            class="flex-1 px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition text-sm"
+                        >
+                        <button 
+                            id="extract-btn" 
+                            class="px-5 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition flex items-center text-sm font-medium"
+                        >
+                            <i class="fas fa-bolt mr-2"></i> Extract
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="flex items-center text-xs text-gray-500">
+                    <i class="fas fa-info-circle mr-2 text-indigo-500"></i>
+                    <span>Works with YouTube, Vimeo, MP4, WebM, and embedded videos</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Info Tabs -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+            <div class="bg-white rounded-xl shadow-sm p-5 border border-gray-100">
+                <h3 class="font-medium text-gray-800 mb-3 flex items-center">
+                    <i class="fas fa-question-circle text-indigo-500 mr-2"></i> How It Works
+                </h3>
+                <div class="prose prose-sm text-gray-600">
+                    <p>1. Enter any website URL in the input field above</p>
+                    <p>2. Click "Extract" to analyze the page</p>
+                    <p>3. View all detected video sources</p>
+                    <p>4. Preview, copy, or download videos</p>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-xl shadow-sm p-5 border border-gray-100">
+                <h3 class="font-medium text-gray-800 mb-3 flex items-center">
+                    <i class="fas fa-lightbulb text-yellow-500 mr-2"></i> Tips
+                </h3>
+                <div class="prose prose-sm text-gray-600">
+                    <p>• Works best with video-sharing sites</p>
+                    <p>• Some videos may require manual download</p>
+                    <p>• Try different URLs if extraction fails</p>
+                    <p>• Results may vary by website structure</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results Section -->
+        <div id="results-section" class="hidden">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-base font-medium text-gray-800 flex items-center">
+                    <i class="fas fa-film text-indigo-500 mr-2"></i> Extracted Videos
+                </h3>
+                <div class="flex space-x-2">
+                    <button 
+                        id="copy-all-btn" 
+                        class="px-3 py-1.5 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-300 transition flex items-center text-xs"
+                    >
+                        <i class="fas fa-copy mr-1.5"></i> Copy All
+                    </button>
+                    <button 
+                        id="export-btn" 
+                        class="px-3 py-1.5 bg-indigo-50 text-indigo-700 rounded-lg hover:bg-indigo-100 focus:outline-none focus:ring-2 focus:ring-indigo-300 transition flex items-center text-xs"
+                    >
+                        <i class="fas fa-file-export mr-1.5"></i> Export
+                    </button>
+                </div>
+            </div>
+
+            <div id="results-container" class="space-y-3">
+                <!-- Results will be inserted here -->
+            </div>
+        </div>
+
+        <!-- Empty State -->
+        <div id="empty-state" class="text-center py-12">
+            <div class="max-w-md mx-auto">
+                <div class="bg-indigo-50 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-play-circle text-2xl text-indigo-500"></i>
+                </div>
+                <h3 class="text-lg font-medium text-gray-800 mb-2">Ready to Extract Videos</h3>
+                <p class="text-gray-500 text-sm">Enter a website URL above to begin</p>
+            </div>
+        </div>
+
+        <!-- Loading State -->
+        <div id="loading" class="hidden text-center py-12">
+            <div class="inline-flex flex-col items-center">
+                <div class="relative mb-4">
+                    <div class="w-12 h-12 border-4 border-indigo-100 rounded-full"></div>
+                    <div class="absolute top-0 left-0 w-12 h-12 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
+                </div>
+                <h3 class="text-base font-medium text-gray-800 mb-1">Analyzing Webpage</h3>
+                <p class="text-gray-500 text-sm">Searching for video sources...</p>
+            </div>
+        </div>
+
+        <!-- Error State -->
+        <div id="error-state" class="hidden bg-red-50 border-l-4 border-red-500 p-4 rounded-lg mb-8">
+            <div class="flex">
+                <div class="flex-shrink-0">
+                    <i class="fas fa-exclamation-circle text-red-500 mt-0.5"></i>
+                </div>
+                <div class="ml-3">
+                    <h3 class="text-sm font-medium text-red-800" id="error-title">Error</h3>
+                    <div class="mt-1 text-sm text-red-700">
+                        <p id="error-message"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Preview Modal -->
+    <div id="preview-modal" class="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-xl shadow-xl w-full max-w-3xl max-h-[90vh] flex flex-col">
+            <div class="flex justify-between items-center bg-gray-50 px-5 py-4 rounded-t-xl border-b">
+                <h3 class="text-base font-medium flex items-center">
+                    <i class="fas fa-play-circle text-indigo-500 mr-2"></i> Video Preview
+                </h3>
+                <button id="close-preview" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="flex-1 overflow-auto p-5">
+                <div id="video-preview-container" class="w-full bg-black rounded-lg overflow-hidden mb-4">
+                    <!-- Video will be inserted here -->
+                    <div class="aspect-video flex items-center justify-center text-white">
+                        <i class="fas fa-spinner fa-spin text-xl"></i>
+                    </div>
+                </div>
+                
+                <div class="bg-gray-50 rounded-lg p-3">
+                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                        <div class="flex-1 min-w-0">
+                            <h4 class="text-sm font-medium text-gray-800 mb-1">Video URL:</h4>
+                            <p id="video-url" class="text-xs text-gray-600 break-all"></p>
+                        </div>
+                        <div class="flex space-x-2">
+                            <button id="copy-url-btn" class="px-3 py-1.5 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 flex items-center text-xs">
+                                <i class="fas fa-copy mr-1.5"></i> Copy
+                            </button>
+                            <button id="download-btn" class="px-3 py-1.5 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 flex items-center text-xs">
+                                <i class="fas fa-download mr-1.5"></i> Download
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t mt-12">
+        <div class="container mx-auto px-4 py-5">
+            <div class="flex flex-col md:flex-row justify-between items-center text-center md:text-left">
+                <div class="flex items-center space-x-2 mb-3 md:mb-0">
+                    <i class="fas fa-play-circle text-indigo-500"></i>
+                    <span class="text-sm font-medium">OG Toolkit</span>
+                </div>
+                <div class="text-xs text-gray-500">
+                    &copy; 2023 Ultimate Video Extractor. All rights reserved.
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // DOM Elements
+            const urlInput = document.getElementById('url-input');
+            const extractBtn = document.getElementById('extract-btn');
+            const resultsContainer = document.getElementById('results-container');
+            const resultsSection = document.getElementById('results-section');
+            const emptyState = document.getElementById('empty-state');
+            const loadingIndicator = document.getElementById('loading');
+            const errorState = document.getElementById('error-state');
+            const errorTitle = document.getElementById('error-title');
+            const errorMessage = document.getElementById('error-message');
+            const copyAllBtn = document.getElementById('copy-all-btn');
+            const exportBtn = document.getElementById('export-btn');
+            const previewModal = document.getElementById('preview-modal');
+            const closePreviewBtn = document.getElementById('close-preview');
+            const videoPreviewContainer = document.getElementById('video-preview-container');
+            const videoUrlElement = document.getElementById('video-url');
+            const copyUrlBtn = document.getElementById('copy-url-btn');
+            const downloadBtn = document.getElementById('download-btn');
+            
+            let currentPreviewUrl = '';
+            let extractedVideos = [];
+            
+            // Event Listeners
+            extractBtn.addEventListener('click', extractVideos);
+            urlInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') extractVideos();
+            });
+            
+            copyAllBtn.addEventListener('click', copyAllUrls);
+            exportBtn.addEventListener('click', exportVideos);
+            closePreviewBtn.addEventListener('click', closePreview);
+            copyUrlBtn.addEventListener('click', copyCurrentUrl);
+            
+            // Main Extraction Function
+            async function extractVideos() {
+                let url = urlInput.value.trim();
+                
+                // Validate and normalize URL
+                if (!url) {
+                    showError('Input Required', 'Please enter a website URL');
+                    urlInput.focus();
+                    return;
+                }
+                
+                // Add https:// if missing
+                if (!url.startsWith('http://') && !url.startsWith('https://')) {
+                    url = 'https://' + url;
+                }
+                
+                // Remove trailing slash if present
+                url = url.replace(/\/$/, '');
+                
+                try {
+                    new URL(url);
+                } catch (e) {
+                    showError('Invalid URL', 'Please enter a valid website URL');
+                    return;
+                }
+                
+                // UI States
+                resetUI();
+                loadingIndicator.classList.remove('hidden');
+                
+                try {
+                    // Use a CORS proxy to fetch the page content
+                    const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`;
+                    const response = await fetch(proxyUrl);
+                    
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    
+                    const data = await response.json();
+                    
+                    if (data.status.http_code !== 200) {
+                        throw new Error('Failed to fetch the webpage. The site may be blocking our requests.');
+                    }
+                    
+                    const htmlContent = data.contents;
+                    
+                    // Parse the HTML to find video elements and URLs
+                    extractedVideos = findVideoUrls(htmlContent);
+                    
+                    if (extractedVideos.length === 0) {
+                        showError('No Videos Found', 'We couldn\'t find any videos on this page. Try another URL.');
+                        return;
+                    }
+                    
+                    displayResults(extractedVideos);
+                } catch (error) {
+                    console.error('Extraction Error:', error);
+                    showError('Extraction Failed', error.message || 'An unknown error occurred while extracting videos.');
+                } finally {
+                    loadingIndicator.classList.add('hidden');
+                }
+            }
+            
+            // Find video URLs in HTML content
+            function findVideoUrls(html) {
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+                const foundUrls = new Set();
+                
+                // 1. Find <video> elements and their <source> children
+                doc.querySelectorAll('video').forEach(video => {
+                    if (video.src) foundUrls.add(video.src);
+                    video.querySelectorAll('source').forEach(source => {
+                        if (source.src) foundUrls.add(source.src);
+                    });
+                });
+                
+                // 2. Find video hosting iframes
+                doc.querySelectorAll('iframe').forEach(iframe => {
+                    const src = iframe.src;
+                    if (src && isVideoHost(src)) {
+                        foundUrls.add(normalizeUrl(src));
+                    }
+                });
+                
+                // 3. Search for video URL patterns in HTML
+                const videoPatterns = [
+                    /https?:\/\/[^"\s]+\.(mp4|webm|ogg|mov|m3u8)(?=["'\s?])/gi,
+                    /https?:\/\/[^"\s]+\.(youtube\.com|youtu\.be|vimeo\.com|dailymotion\.com)[^"\s]*(?=["'\s?])/gi,
+                    /(https?:\/\/[^"\s]+\.(googlevideo\.com|fbcdn\.net|cdninstagram\.com)[^"\s]*(?=["'\s?]))/gi
+                ];
+                
+                videoPatterns.forEach(pattern => {
+                    const matches = html.match(pattern);
+                    if (matches) {
+                        matches.forEach(url => {
+                            foundUrls.add(normalizeUrl(url.replace(/[?'"].*$/, '')));
+                        });
+                    }
+                });
+                
+                // Filter out non-video URLs
+                return Array.from(foundUrls).filter(url => {
+                    return !url.match(/\.(css|js|json|png|jpg|jpeg|gif|svg|woff|woff2|ttf)(?=[?'"\s]|$)/i) &&
+                           !url.includes('googleads') &&
+                           !url.includes('doubleclick');
+                });
+            }
+            
+            // Normalize URL by removing trailing slashes and cleaning up
+            function normalizeUrl(url) {
+                return url.replace(/\/$/, '').replace(/\/\/(www\.)/, '//');
+            }
+            
+            // Display results in UI
+            function displayResults(videoUrls) {
+                emptyState.classList.add('hidden');
+                errorState.classList.add('hidden');
+                resultsSection.classList.remove('hidden');
+                resultsContainer.innerHTML = '';
+                
+                videoUrls.forEach((url, index) => {
+                    const videoCard = document.createElement('div');
+                    videoCard.className = 'video-card bg-white p-4 border border-gray-200';
+                    
+                    const isHostedVideo = isVideoHost(url);
+                    const displayUrl = truncateMiddle(url, 50);
+                    const videoType = getVideoType(url);
+                    
+                    videoCard.innerHTML = `
+                        <div class="flex flex-col sm:flex-row sm:items-center">
+                            <div class="flex-1 min-w-0 mb-3 sm:mb-0">
+                                <div class="flex items-center mb-1">
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${getVideoTypeColor(videoType)}">
+                                        ${videoType}
+                                    </span>
+                                    <span class="ml-2 text-xs text-gray-500">#${index + 1}</span>
+                                </div>
+                                <p class="text-sm text-gray-800 font-medium break-all">${displayUrl}</p>
+                            </div>
+                            <div class="flex space-x-2">
+                                <button class="preview-btn px-3 py-1 text-xs bg-indigo-50 text-indigo-700 rounded-lg hover:bg-indigo-100 flex items-center" 
+                                        data-url="${encodeURIComponent(url)}">
+                                    <i class="fas fa-eye mr-1.5"></i> Preview
+                                </button>
+                                <button class="copy-btn px-3 py-1 text-xs bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 flex items-center" 
+                                        data-url="${encodeURIComponent(url)}">
+                                    <i class="fas fa-copy mr-1.5"></i> Copy
+                                </button>
+                                <button class="download-btn px-3 py-1 text-xs bg-green-50 text-green-700 rounded-lg hover:bg-green-100 flex items-center" 
+                                        data-url="${encodeURIComponent(url)}" ${isHostedVideo ? 'disabled' : ''}>
+                                    <i class="fas fa-download mr-1.5"></i> Download
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                    
+                    resultsContainer.appendChild(videoCard);
+                });
+                
+                // Add event listeners to buttons
+                addButtonEventListeners();
+            }
+            
+            // Helper Functions
+            function isVideoHost(url) {
+                return url.includes('youtube.com') || 
+                       url.includes('youtu.be') || 
+                       url.includes('vimeo.com') || 
+                       url.includes('dailymotion.com');
+            }
+            
+            function getVideoType(url) {
+                if (url.includes('youtube.com') || url.includes('youtu.be')) return 'YouTube';
+                if (url.includes('vimeo.com')) return 'Vimeo';
+                if (url.includes('dailymotion.com')) return 'Dailymotion';
+                if (url.match(/\.(mp4|webm|ogg|mov|m3u8)/i)) return 'Direct Video';
+                return 'Video';
+            }
+            
+            function getVideoTypeColor(type) {
+                switch(type) {
+                    case 'YouTube': return 'bg-red-100 text-red-800';
+                    case 'Vimeo': return 'bg-blue-100 text-blue-800';
+                    case 'Dailymotion': return 'bg-blue-100 text-blue-800';
+                    case 'Direct Video': return 'bg-green-100 text-green-800';
+                    default: return 'bg-gray-100 text-gray-800';
+                }
+            }
+            
+            function truncateMiddle(str, maxLength) {
+                if (str.length <= maxLength) return str;
+                const half = Math.floor(maxLength / 2);
+                return str.substring(0, half) + '...' + str.substring(str.length - half);
+            }
+            
+            function resetUI() {
+                errorState.classList.add('hidden');
+                emptyState.classList.add('hidden');
+                resultsSection.classList.add('hidden');
+            }
+            
+            function showError(title, message) {
+                errorTitle.textContent = title;
+                errorMessage.textContent = message;
+                errorState.classList.remove('hidden');
+                loadingIndicator.classList.add('hidden');
+            }
+            
+            // Button Event Handlers
+            function addButtonEventListeners() {
+                // Copy buttons
+                document.querySelectorAll('.copy-btn').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const urlToCopy = decodeURIComponent(this.getAttribute('data-url'));
+                        navigator.clipboard.writeText(urlToCopy).then(() => {
+                            showToast('URL copied to clipboard!', 'success');
+                        });
+                    });
+                });
+                
+                // Preview buttons
+                document.querySelectorAll('.preview-btn').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const url = decodeURIComponent(this.getAttribute('data-url'));
+                        showPreview(url);
+                    });
+                });
+                
+                // Download buttons
+                document.querySelectorAll('.download-btn:not([disabled])').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const url = decodeURIComponent(this.getAttribute('data-url'));
+                        downloadVideo(url);
+                    });
+                });
+            }
+            
+            // Preview Modal Functions
+            function showPreview(url) {
+                currentPreviewUrl = url;
+                videoUrlElement.textContent = url;
+                previewModal.classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+                
+                // Clear previous content
+                videoPreviewContainer.innerHTML = '';
+                
+                // Show loading state
+                videoPreviewContainer.innerHTML = `
+                    <div class="aspect-video flex items-center justify-center bg-black text-white">
+                        <i class="fas fa-spinner fa-spin text-xl"></i>
+                    </div>
+                `;
+                
+                // Set up the appropriate player
+                setTimeout(() => {
+                    setupVideoPlayer(url);
+                }, 100);
+            }
+            
+            function setupVideoPlayer(url) {
+                if (isVideoHost(url)) {
+                    // Embedded video (YouTube, Vimeo, etc.)
+                    const embedUrl = getEmbedUrl(url);
+                    videoPreviewContainer.innerHTML = `
+                        <iframe src="${embedUrl}" 
+                                frameborder="0" 
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                                allowfullscreen
+                                class="w-full aspect-video"></iframe>
+                    `;
+                } else {
+                    // Direct video file
+                    videoPreviewContainer.innerHTML = `
+                        <video controls autoplay class="w-full aspect-video bg-black">
+                            <source src="${url}" type="${getVideoMimeType(url)}">
+                            Your browser does not support the video tag.
+                        </video>
+                    `;
+                }
+            }
+            
+            function getEmbedUrl(url) {
+                if (url.includes('youtube.com') || url.includes('youtu.be')) {
+                    let videoId = '';
+                    if (url.includes('v=')) {
+                        videoId = url.split('v=')[1].split('&')[0];
+                    } else if (url.includes('youtu.be/')) {
+                        videoId = url.split('youtu.be/')[1].split('?')[0];
+                    }
+                    return `https://www.youtube.com/embed/${videoId}?autoplay=1`;
+                } else if (url.includes('vimeo.com')) {
+                    const videoId = url.split('vimeo.com/')[1].split('?')[0];
+                    return `https://player.vimeo.com/video/${videoId}?autoplay=1`;
+                } else if (url.includes('dailymotion.com')) {
+                    const videoId = url.split('dailymotion.com/video/')[1].split('_')[0];
+                    return `https://www.dailymotion.com/embed/video/${videoId}?autoplay=1`;
+                }
+                return url;
+            }
+            
+            function getVideoMimeType(url) {
+                if (url.includes('.mp4')) return 'video/mp4';
+                if (url.includes('.webm')) return 'video/webm';
+                if (url.includes('.ogg')) return 'video/ogg';
+                return 'video/mp4';
+            }
+            
+            function closePreview() {
+                previewModal.classList.add('hidden');
+                document.body.style.overflow = '';
+            }
+            
+            function copyCurrentUrl() {
+                navigator.clipboard.writeText(currentPreviewUrl).then(() => {
+                    showToast('URL copied to clipboard!', 'success');
+                });
+            }
+            
+            // Download Functions
+            function downloadVideo(url) {
+                // Create a temporary link element
+                const a = document.createElement('a');
+                a.href = url;
+                
+                // Extract filename from URL or generate one
+                let filename = url.split('/').pop();
+                if (!filename || filename.length > 50 || !filename.includes('.')) {
+                    filename = `video-${new Date().getTime()}.${url.split('.').pop().split('?')[0]}`;
+                }
+                
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                
+                showToast('Download started!', 'success');
+            }
+            
+            // Export Functions
+            function exportVideos() {
+                if (extractedVideos.length === 0) {
+                    showToast('No videos to export', 'warning');
+                    return;
+                }
+                
+                const exportData = {
+                    date: new Date().toISOString(),
+                    sourceUrl: urlInput.value.trim(),
+                    videos: extractedVideos
+                };
+                
+                const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `og-toolkit-export-${new Date().getTime()}.json`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                
+                showToast('Export completed!', 'success');
+            }
+            
+            // Copy All URLs
+            function copyAllUrls() {
+                if (extractedVideos.length === 0) {
+                    showToast('No videos to copy', 'warning');
+                    return;
+                }
+                
+                const textToCopy = extractedVideos.join('\n\n');
+                navigator.clipboard.writeText(textToCopy).then(() => {
+                    showToast(`Copied ${extractedVideos.length} URLs to clipboard!`, 'success');
+                });
+            }
+            
+            // Toast Notification
+            function showToast(message, type = 'info') {
+                const toast = document.createElement('div');
+                const colors = {
+                    success: 'bg-green-100 text-green-800',
+                    error: 'bg-red-100 text-red-800',
+                    warning: 'bg-yellow-100 text-yellow-800',
+                    info: 'bg-blue-100 text-blue-800'
+                };
+                
+                toast.className = `fixed bottom-4 right-4 px-4 py-2 rounded-lg shadow-lg ${colors[type]} flex items-center animate-fade-in text-sm`;
+                toast.innerHTML = `
+                    <i class="fas ${type === 'success' ? 'fa-check-circle' : 
+                                      type === 'error' ? 'fa-exclamation-circle' : 
+                                      type === 'warning' ? 'fa-exclamation-triangle' : 'fa-info-circle'} 
+                        mr-2"></i>
+                    <span>${message}</span>
+                `;
+                
+                document.body.appendChild(toast);
+                
+                setTimeout(() => {
+                    toast.classList.remove('animate-fade-in');
+                    toast.classList.add('animate-fade-out');
+                    setTimeout(() => {
+                        document.body.removeChild(toast);
+                    }, 300);
+                }, 3000);
+            }
+        });
+    </script>
+</body>
+</html>
